@@ -31,20 +31,28 @@ class ClockView @JvmOverloads constructor(
     private val paint = Paint()
     private var isInit: Boolean = false
     private val rect = Rect()
+    lateinit var center: Center
 
 
     private fun initClock() {
+
+        center = findCenter()
+
         mHeight = height
         mWidth = width
         padding = numeralSpacing + 50
-        fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 13f,
-                resources.displayMetrics).toInt()
+        fontSize = context.resources.fontSPtoPixels(13)
 
         val min = Math.min(height, width)
         radius = min / 2 - padding
         handTruncation = min / 20
         hourHandTruncation = min / 7
         isInit = true
+    }
+
+    // todo
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -64,10 +72,9 @@ class ClockView @JvmOverloads constructor(
     private fun drawHand(canvas: Canvas, loc: Double, isHour: Boolean) {
         val angle = Math.PI * loc / 30 - Math.PI / 2
         val handRadius = if (isHour) radius - handTruncation - hourHandTruncation else radius - handTruncation
-        canvas.drawLine((width / 2).toFloat(),
-                (height / 2).toFloat(),
-                (width / 2 + Math.cos(angle) * handRadius).toFloat(),
-                (height / 2 + Math.sin(angle) * handRadius).toFloat(),
+        canvas.drawLine(center.x, center.y,
+                (center.x + Math.cos(angle) * handRadius).toFloat(),
+                (center.y + Math.sin(angle) * handRadius).toFloat(),
                 paint)
     }
 
@@ -86,15 +93,15 @@ class ClockView @JvmOverloads constructor(
             val tmp = i.toString()
             paint.getTextBounds(tmp, 0, tmp.length, rect)
             val angle = Math.PI / 6 * (i - 3)
-            val x = (width / 2 + Math.cos(angle) * radius - rect.width() / 2).toInt()
-            val y = ((height / 2).toDouble() + Math.sin(angle) * radius + (rect.height() / 2).toDouble()).toInt()
+            val x = (center.x + Math.cos(angle) * radius - rect.width() / 2).toInt()
+            val y = (center.y + Math.sin(angle) * radius + (rect.height() / 2).toDouble()).toInt()
             canvas.drawText(tmp, x.toFloat(), y.toFloat(), paint)
         }
     }
 
     private fun drawCenter(canvas: Canvas) {
         paint.style = Paint.Style.FILL
-        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), 12f, paint)
+        canvas.drawCircle(center.x, center.y, 12f, paint)
     }
 
     private fun drawCircle(canvas: Canvas) {
@@ -103,6 +110,6 @@ class ClockView @JvmOverloads constructor(
         paint.strokeWidth = 5f
         paint.style = Paint.Style.STROKE
         paint.isAntiAlias = true
-        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), (radius + padding - 10).toFloat(), paint)
+        canvas.drawCircle(center.x, center.y, (radius + padding - 10).toFloat(), paint)
     }
 }
