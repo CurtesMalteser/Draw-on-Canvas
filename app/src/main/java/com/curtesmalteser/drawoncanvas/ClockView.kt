@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -23,20 +24,19 @@ class ClockView @JvmOverloads constructor(
     private var mWidth = 0
     private var padding = 0
     private var fontSize = 0
-    private val numeralSpaccing = 0
+    private val numeralSpacing = 0
     private var handTruncation: Int = 0
     private var hourHandTruncation = 0
     private var radius: Int = 0
-    private var paint: Paint? = null
+    private val paint = Paint()
     private var isInit: Boolean = false
-    private val numbers = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
     private val rect = Rect()
 
 
     private fun initClock() {
         mHeight = height
         mWidth = width
-        padding = numeralSpaccing + 50
+        padding = numeralSpacing + 50
         fontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 13f,
                 resources.displayMetrics).toInt()
 
@@ -44,7 +44,6 @@ class ClockView @JvmOverloads constructor(
         radius = min / 2 - padding
         handTruncation = min / 20
         hourHandTruncation = min / 7
-        paint = Paint()
         isInit = true
     }
 
@@ -69,7 +68,7 @@ class ClockView @JvmOverloads constructor(
                 (height / 2).toFloat(),
                 (width / 2 + Math.cos(angle) * handRadius).toFloat(),
                 (height / 2 + Math.sin(angle) * handRadius).toFloat(),
-                paint!!)
+                paint)
     }
 
     private fun drawHands(canvas: Canvas) {
@@ -82,30 +81,28 @@ class ClockView @JvmOverloads constructor(
     }
 
     private fun drawNumeral(canvas: Canvas) {
-        paint!!.textSize = fontSize.toFloat()
-        for (number in numbers) {
-            val tmp = number.toString()
-            paint!!.getTextBounds(tmp, 0, tmp.length, rect)
-            val angle = Math.PI / 6 * (number - 3)
+        paint.textSize = fontSize.toFloat()
+        for (i in 1..12) {
+            val tmp = i.toString()
+            paint.getTextBounds(tmp, 0, tmp.length, rect)
+            val angle = Math.PI / 6 * (i - 3)
             val x = (width / 2 + Math.cos(angle) * radius - rect.width() / 2).toInt()
             val y = ((height / 2).toDouble() + Math.sin(angle) * radius + (rect.height() / 2).toDouble()).toInt()
-            canvas.drawText(tmp, x.toFloat(), y.toFloat(), paint!!)
+            canvas.drawText(tmp, x.toFloat(), y.toFloat(), paint)
         }
     }
 
     private fun drawCenter(canvas: Canvas) {
-        paint!!.style = Paint.Style.FILL
-        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), 12f, paint!!)
+        paint.style = Paint.Style.FILL
+        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), 12f, paint)
     }
+
     private fun drawCircle(canvas: Canvas) {
-        paint!!.reset()
-        paint!!.color = resources.getColor(android.R.color.white)
-        paint!!.strokeWidth = 5f
-        paint!!.style = Paint.Style.STROKE
-        paint!!.isAntiAlias = true
-        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), (radius + padding - 10).toFloat(), paint!!)
-
+        paint.reset()
+        paint.color = ContextCompat.getColor(context, android.R.color.white)
+        paint.strokeWidth = 5f
+        paint.style = Paint.Style.STROKE
+        paint.isAntiAlias = true
+        canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), (radius + padding - 10).toFloat(), paint)
     }
-
-
 }
