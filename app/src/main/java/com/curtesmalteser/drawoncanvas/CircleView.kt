@@ -70,7 +70,7 @@ class CircleView @JvmOverloads constructor(
                 listColors = listOf(blue, red, green),
                 positionsList = listOf((0.05f), (0.5f), (0.7f)))
 
-        
+
         fillArc(mOval, 0F, 270F, mPaintGrad)
         //fillArc(mOval, 200F, 30F,  mPaintGreen)
         //fillArc(mOval, 230F, 80F, mPaintBlue)
